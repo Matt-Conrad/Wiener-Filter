@@ -4,10 +4,13 @@ import pandas as pd
 from scipy import signal, fft, fftpack
 from noise import calculateNoise
 import matplotlib.pyplot as plt
-from diffusion import b, a
+from generation import generateBGs
 
 Ts = 1 # minute
 Ts = Ts / 60 # 60 minutes = 1 hour
+
+b = [0.0952, 0]
+a = [1, -0.9048]
 
 def calculateWiener(s, x, y, p):
     Ts = 1 # minute
@@ -68,7 +71,7 @@ def applyWiener(g_opt, g_opt2):
 
     # df = generateBGs(1, 67.0) # Time in hours
     # df.to_pickle("Test67hr.pkl") 
-    df = pd.read_pickle("Test67hr.pkl")
+    df = pd.read_pickle("data/testPickle")
 
     delay = 10
     delaySpread = 2
@@ -121,6 +124,8 @@ def applyWiener(g_opt, g_opt2):
         plt.legend()
 
         plt.show()
+
+        print("done")
 
 
 

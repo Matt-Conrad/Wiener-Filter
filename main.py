@@ -6,10 +6,10 @@ def main():
     # bg = generateBGs(1, 40.0) # Time in hours
     # bg.plot.line(subplots=False)
 
-    # bg.to_pickle("150Patients47hr.pkl") 
+    # bg.to_pickle("data/pickle") 
 
     import pandas as pd
-    bg = pd.read_pickle("150Patients47hr.pkl")
+    bg = pd.read_pickle("data/pickle")
 
     x = applyDiffusion(bg.iloc[3:], 1)
 
