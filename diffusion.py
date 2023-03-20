@@ -1,8 +1,10 @@
-from scipy import signal, fft
+from scipy import signal, fft, fftpack
 from noise import calculateNoise, calculateSNR
 from wiener import calculateWienerDirect, calculateWienerIterative, applyWiener
+from plotting import plotOptimalWiener
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 b = [0.0952, 0]
 a = [1, -0.9048]
@@ -12,6 +14,9 @@ targetSNR = 40 # dB
 filterOrder = 30
 
 def applyDiffusion(df, nDatasets):
+    Ts = 1 # minute
+    Ts = Ts / 60 # 60 minutes = 1 hour
+
     df = df.iloc[:, 0:nDatasets]
 
     w = 512
@@ -45,34 +50,9 @@ def applyDiffusion(df, nDatasets):
 
         g_opt2 = calculateWienerIterative(x, filterOrder)
 
-        g_opts[i, :] = g_opt[:, 0]
+    plotOptimalWiener(g_opt)
 
-        gMag = np.abs(fft.fft(g_opt))
-        g_opt_mag[i, :] = gMag[:, 0]
-
-        coeffs = g_opt[:, 0]
-
-        _, gd = signal.group_delay((coeffs, np.array([1])), w=w)
-        g_opt_ang[i, :] = gd
-
-        print("done")
-
-    # gd = np.mean(g_opt_ang, axis=0)
-
-    # gSize = g_opt.size
-    # freqs = fftpack.fftfreq(gSize, Ts)
-    # idx = np.argsort(freqs)
-
-    # _, axes = plt.subplots(2, 1)
-
-    # axes[0].plot(freqs[idx][gSize//2:], gMag[idx][gSize//2:], ".", label="x")
-    # axes[1].plot(gd, ".")
-
-    # plt.suptitle(f"{nDatasets}Patients47hr")
-    
-    # plt.show()
-
-    applyWiener(g_opts[0, :], g_opt2)
+    applyWiener(g_opt[:, 0], g_opt2)
 
     return x
 

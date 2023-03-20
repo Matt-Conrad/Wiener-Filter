@@ -117,3 +117,23 @@ def plotPSD(y, noise, x):
     plt.show()
 
     print("Done")
+
+def plotOptimalWiener(coeffs):
+    Ts = 1 # minute
+    Ts = Ts / 60 # 60 minutes = 1 hour
+    w = 512
+
+    gMag = np.abs(fft.fft(coeffs))
+
+    _, gd = signal.group_delay((coeffs[:,0], np.array([1])), w=w)
+
+    gSize = coeffs.size
+    freqs = fftpack.fftfreq(gSize, Ts)
+    idx = np.argsort(freqs)
+
+    _, axes = plt.subplots(2, 1)
+
+    axes[0].plot(freqs[idx][gSize//2:], gMag[idx][gSize//2:], ".", label="x")
+    axes[1].plot(gd, ".")
+    
+    plt.show()
