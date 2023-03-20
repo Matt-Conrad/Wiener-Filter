@@ -24,23 +24,13 @@ def applyDiffusion(df, nDatasets):
 
         y = signal.lfilter(b, a, s)
 
-        # Extract flat part only 
-        # TODO: Take out later
-        # s = s[300:2200]
-        # y = y[300:2200]
-
         # Remove transitory effect introduced by filtering
         s = s[300:]
         y = y[300:]
 
-        sFlat = s[:1900]
-        yFlat = y[:1900]
-
         noise = calculateNoise(y, 15)
-        noiseFlat = calculateNoise(yFlat, targetSNR)
 
         x = y + noise
-        xFlat = yFlat + noiseFlat
 
         # plotSignalCreation(s, y, x)
 
@@ -61,12 +51,6 @@ def applyDiffusion(df, nDatasets):
 
         _, gd = signal.group_delay((coeffs, np.array([1])), w=w)
         g_opt_ang[i, :] = gd
-
-        # plt.plot(gMag, '.')
-        # plt.show()
-
-        # plt.plot(gd, '.')
-        # plt.show()
 
         print("done")
 
