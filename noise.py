@@ -29,37 +29,17 @@ def calculateNoise(y, targetSNR):
 
     return noise
 
-def calculateSNR(y, noise, x):
-    # All viable ways to calculate SNR
+def calculateSNR(x):
+    # TODO: Break signal up into sections 
 
-    noiseMag = np.abs(fft.fft(noise))
-    yMag = np.abs(fft.fft(y))
-
-    noisePSD = noiseMag ** 2
-    yPSD = yMag ** 2
-
-    SNRestimate = 10 * np.log10(np.sum(yPSD) / np.sum(noisePSD))
-    
     xMag = np.abs(fft.fft(x))
     xPSD = xMag ** 2
 
-    xStart = xPSD[:100]
-    xEnd = xPSD[1800:]
-
-    noiseSection = xPSD[100:1800]
-
-    signalSectionSum = np.sum(xStart) + np.sum(xEnd)
-
-    SNRestimate2 = 10 * np.log10(signalSectionSum / np.sum(noiseSection))
-
     noiseAvg = np.mean(xPSD[500:1400])
     noiseSum = noiseAvg * 1900
-    noiseSumBelow3 = noiseAvg * 200
-    
-    SNRestimate3 = 10 * np.log10((signalSectionSum - noiseSumBelow3) / noiseSum)
 
     signalSum = np.sum(xPSD) - noiseSum
 
-    SNRestimate4 = 10 * np.log10(signalSum / noiseSum)
+    SNRestimate = 10 * np.log10(signalSum / noiseSum)
 
-    print("Done")
+    return SNRestimate
