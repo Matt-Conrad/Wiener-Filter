@@ -1,6 +1,6 @@
 from scipy import signal, fft
 from noise import calculateNoise
-from wiener import calculateWiener, applyWiener
+from wiener import calculateWienerDirect, calculateWienerIterative, applyWiener
 
 import numpy as np
 
@@ -19,6 +19,7 @@ def applyDiffusion(df, nDatasets):
     g_opt_mag = np.zeros((nDatasets, filterOrder))
     g_opt_ang = np.zeros((nDatasets, w))
     g_opt2 = None
+    
     for i, bg in enumerate(df):
         s = df[bg].to_numpy()
 
@@ -40,7 +41,9 @@ def applyDiffusion(df, nDatasets):
 
         # calculateSNR(yFlat, noiseFlat, xFlat)
 
-        g_opt, g_opt2 = calculateWiener(s, x, y, filterOrder)
+        g_opt = calculateWienerDirect(s, x, y, filterOrder)
+
+        g_opt2 = calculateWienerIterative(x, filterOrder)
 
         g_opts[i, :] = g_opt[:, 0]
 

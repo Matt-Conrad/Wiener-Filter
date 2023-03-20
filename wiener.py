@@ -12,7 +12,7 @@ Ts = Ts / 60 # 60 minutes = 1 hour
 b = [0.0952, 0]
 a = [1, -0.9048]
 
-def calculateWiener(s, x, y, p):
+def calculateWienerDirect(s, x, y, p):
     Ts = 1 # minute
     Ts = Ts / 60 # 60 minutes = 1 hour
     samplePeriod = 20
@@ -41,8 +41,15 @@ def calculateWiener(s, x, y, p):
 
     g_opt = np.matmul(thirdTerm, s_vec)
 
+    return g_opt
 
-    ###
+def calculateWienerIterative(x, p):
+    samplePeriod = 20
+
+    n = int((len(x) - p) / samplePeriod)
+
+    Y = np.zeros((n, p))
+    s_vec = np.zeros((n, 1))
 
     def residualFunc(g):
         sPrime = np.zeros(s_vec.shape)
@@ -55,16 +62,13 @@ def calculateWiener(s, x, y, p):
 
         return residuals[:, 0]
 
-    #fun
-    #x0
     f = residualFunc
-    # x0 = g_opt[:,0]
-    x0 = np.ones(g_opt[:,0].shape)
+    x0 = np.ones((p,))
     method = "lm"
 
-    g_opt2 = opt.least_squares(f, x0, method=method)
+    g_opt = opt.least_squares(f, x0, method=method)
 
-    return g_opt, g_opt2.x
+    return g_opt.x
 
 def applyWiener(g_opt, g_opt2):
     nProfiles = 20
