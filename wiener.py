@@ -70,7 +70,7 @@ def calculateWienerIterative(x, p):
 
     return g_opt.x
 
-def applyWiener(g_opt, g_opt2):
+def applyWiener(g_opt):
     nProfiles = 20
 
     # df = generateBGs(1, 67.0) # Time in hours
