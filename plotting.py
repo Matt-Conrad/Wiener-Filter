@@ -125,7 +125,7 @@ def plotOptimalWiener(coeffs):
 
     gMag = np.abs(fft.fft(coeffs))
 
-    _, gd = signal.group_delay((coeffs[:,0], np.array([1])), w=w)
+    _, gd = signal.group_delay((coeffs[:], np.array([1])), w=w)
 
     gSize = coeffs.size
     freqs = fftpack.fftfreq(gSize, Ts)

@@ -13,17 +13,13 @@ targetSNR = 40 # dB
 
 filterOrder = 30
 
-def applyDiffusion(df, nDatasets):
+def applyDiffusion(df, nDatasets, directMethod=True):
     Ts = 1 # minute
     Ts = Ts / 60 # 60 minutes = 1 hour
 
     df = df.iloc[:, 0:nDatasets]
 
-    w = 512
-    g_opts = np.zeros((nDatasets, filterOrder))
-    g_opt_mag = np.zeros((nDatasets, filterOrder))
-    g_opt_ang = np.zeros((nDatasets, w))
-    g_opt2 = None
+    g_opt = None
 
     for i, bg in enumerate(df):
         s = df[bg].to_numpy()
@@ -46,13 +42,14 @@ def applyDiffusion(df, nDatasets):
 
         SNR = calculateSNR(x)
 
-        g_opt = calculateWienerDirect(s, x, y, filterOrder)
-
-        g_opt2 = calculateWienerIterative(x, filterOrder)
-
+        if directMethod:
+            g_opt = calculateWienerDirect(s, x, y, filterOrder)
+        else:
+            g_opt = calculateWienerIterative(x, filterOrder)
+        
     plotOptimalWiener(g_opt)
 
-    applyWiener(g_opt[:, 0], g_opt2)
+    applyWiener(g_opt)
 
     return x
 

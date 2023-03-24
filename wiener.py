@@ -41,7 +41,7 @@ def calculateWienerDirect(s, x, y, p):
 
     g_opt = np.matmul(thirdTerm, s_vec)
 
-    return g_opt
+    return g_opt[:, 0]
 
 def calculateWienerIterative(x, p):
     samplePeriod = 20
@@ -95,8 +95,6 @@ def applyWiener(g_opt, g_opt2):
 
         sPrime = np.convolve(x, g_opt)
 
-        sPrime2 = np.convolve(x, g_opt2)
-
         fig, axes = plt.subplots(2, 1, sharex=True, sharey=True)
 
         axes[0].plot(s, label="s")
@@ -105,7 +103,6 @@ def applyWiener(g_opt, g_opt2):
 
         axes[1].plot(s, label="s")
         axes[1].plot(x, label="x")
-        # axes[1].plot(sPrime2, label="sp")
         axes[1].legend()
 
         plt.show()

@@ -11,7 +11,7 @@ def main():
     import pandas as pd
     bg = pd.read_pickle("data/pickle")
 
-    x = applyDiffusion(bg.iloc[3:], 1)
+    x = applyDiffusion(bg.iloc[3:], 1, directMethod=True)
 
     analyze(x)
 
