@@ -13,22 +13,40 @@ targetSNR = 40 # dB
 
 filterOrder = 30
 
-def applyDiffusion(df, nDatasets, directMethod=True):
+def applyDiffusion2(df, nDatasets, directMethod=True):
     Ts = 1 # minute
     Ts = Ts / 60 # 60 minutes = 1 hour
 
     df = df.iloc[:, 0:nDatasets]
 
-    g_opt = None
+    S = df.copy()
+    Y = df.copy()
 
     for i, bg in enumerate(df):
         s = df[bg].to_numpy()
 
         y = signal.lfilter(b, a, s)
 
-        # Remove transitory effect introduced by filtering
-        s = s[300:]
-        y = y[300:]
+        S[bg] = s
+        Y[bg] = y
+
+    return S, Y
+
+def applyDiffusion(S, Y, nDatasets, directMethod=True):
+    Ts = 1 # minute
+    Ts = Ts / 60 # 60 minutes = 1 hour
+
+    # Remove transitory effect introduced by filtering
+    cropIndex = 300
+    S = S.iloc[cropIndex:, 0:nDatasets]
+    Y = Y.iloc[cropIndex:, 0:nDatasets]
+
+    g_opt = None
+
+    for i, bg in enumerate(S):
+        s = S[bg].to_numpy()
+
+        y = Y[bg].to_numpy()
 
         noise = calculateNoise(y, 15)
 
