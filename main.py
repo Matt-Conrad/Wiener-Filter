@@ -1,5 +1,5 @@
 from generation import generateBGs
-from diffusion import applyDiffusion, applyDiffusion2
+from diffusion import applyDiffusion, applyNoise, applyWiener2
 from analysis import analyze
 
 def main():
@@ -11,9 +11,11 @@ def main():
     import pandas as pd
     bg = pd.read_pickle("data/pickle")
 
-    S, Y = applyDiffusion2(bg.iloc[3:], 1, directMethod=True)
+    S, Y = applyDiffusion(bg.iloc[3:], 1)
 
-    x = applyDiffusion(S, Y, 1, directMethod=True)
+    X = applyNoise(Y)
+
+    x = applyWiener2(S, Y, X, directMethod=True)
 
     analyze(x)
 
