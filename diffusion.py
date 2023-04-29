@@ -53,9 +53,9 @@ def applyWiener2(S, Y, X, directMethod=True):
     else:
         g_opt = X.apply(lambda x: calculateWienerIterative(x, filterOrder))
         
-    plotOptimalWiener(g_opt)
+    plotOptimalWiener(g_opt["BG"].values)
 
-    applyWiener(g_opt)
+    applyWiener(g_opt["BG"].values)
 
     return X["BG"]
 
