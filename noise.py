@@ -32,7 +32,7 @@ def calculateNoise(y, targetSNR):
 def calculateSNR(x):
     # TODO: Break signal up into sections 
 
-    xMag = np.abs(fft.fft(x))
+    xMag = np.abs(fft.fft(x.values))
     xPSD = xMag ** 2
 
     noiseAvg = np.mean(xPSD[500:1400])

@@ -6,26 +6,25 @@ from plotting import plotOptimalWiener
 import numpy as np
 import matplotlib.pyplot as plt
 
-b = [0.0952, 0]
-a = [1, -0.9048]
-
 targetSNR = 40 # dB
 
 filterOrder = 30
 
-def applyDiffusion(df, nDatasets):
-    df = df.iloc[:, 0:nDatasets]
+b = [0.0952, 0]
+a = [1, -0.9048]
 
-    S = df.copy()
-    Y = df.copy()
+def applyFilter(s):
+    b = [0.0952, 0]
+    a = [1, -0.9048]
 
-    for i, bg in enumerate(df):
-        s = df[bg].to_numpy()
+    y = signal.lfilter(b, a, s)
 
-        y = signal.lfilter(b, a, s)
+    return y
 
-        S[bg] = s
-        Y[bg] = y
+def applyDiffusion(S, nDatasets):
+    S = S.iloc[:, 0:nDatasets]
+
+    Y = S.apply(applyFilter, axis=0)
 
     # Remove transitory effect introduced by filtering
     cropIndex = 300
@@ -34,19 +33,15 @@ def applyDiffusion(df, nDatasets):
 
     return S, Y
 
+def calculateNoises(y):
+    snr = 15
+    noise = calculateNoise(y, snr)
+    return noise
+
 def applyNoise(Y):
-    X = Y.copy()
-
-    for i, bg in enumerate(Y):
-        y = Y[bg].to_numpy()
-
-        noise = calculateNoise(y, 15)
-
-        x = y + noise
-
-        SNR = calculateSNR(x)
-
-        X[bg] = x
+    Noise = Y.apply(calculateNoises, axis=0)
+    X = Y.add(Noise, fill_value=0)
+    SNRs = X.apply(calculateSNR, axis=0)
 
     return X
 
