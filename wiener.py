@@ -12,7 +12,9 @@ Ts = Ts / 60 # 60 minutes = 1 hour
 b = [0.0952, 0]
 a = [1, -0.9048]
 
-def calculateWienerDirect(s, x, y, p):
+def calculateWienerDirect(x, S, p):
+    s = S[x.name]
+
     Ts = 1 # minute
     Ts = Ts / 60 # 60 minutes = 1 hour
     samplePeriod = 20

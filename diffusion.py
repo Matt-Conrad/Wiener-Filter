@@ -48,25 +48,14 @@ def applyNoise(Y):
 def applyWiener2(S, Y, X, directMethod=True):
     g_opt = None
 
-    for i, bg in enumerate(S):
-        # plotSignalCreation(s, y, x)
-
-        # plotFilterDetails(b, a)
-
-        # plotPSD(y, noise, x)
-
-        s = S[bg].to_numpy()
-        y = Y[bg].to_numpy()
-        x = X[bg].to_numpy()
-
-        if directMethod:
-            g_opt = calculateWienerDirect(s, x, y, filterOrder)
-        else:
-            g_opt = calculateWienerIterative(x, filterOrder)
+    if directMethod:
+        g_opt = X.apply(lambda x: calculateWienerDirect(x, S, filterOrder))
+    else:
+        g_opt = X.apply(lambda x: calculateWienerIterative(x, filterOrder))
         
     plotOptimalWiener(g_opt)
 
     applyWiener(g_opt)
 
-    return x
+    return X["BG"]
 
