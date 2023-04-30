@@ -9,8 +9,13 @@ from generation import generateBGs
 Ts = 1 # minute
 Ts = Ts / 60 # 60 minutes = 1 hour
 
-b = [0.0952, 0]
-a = [1, -0.9048]
+def applyFilter(s):
+    b = [0.0952, 0]
+    a = [1, -0.9048]
+
+    y = signal.lfilter(b, a, s)
+
+    return y
 
 def calculateWienerDirect(x, S, p):
     s = S[x.name]
@@ -72,19 +77,6 @@ def calculateWienerIterative(x, p):
 
     return g_opt.x
 
-def applyFilter(s):
-    b = [0.0952, 0]
-    a = [1, -0.9048]
-
-    y = signal.lfilter(b, a, s)
-
-    return y
-
-def calculateNoises(y):
-    snr = 35
-    noise = calculateNoise(y, snr)
-    return noise
-
 def calculateSPrime(x, g_opt):
     sPrime = np.convolve(x, g_opt)
     return sPrime
@@ -105,7 +97,7 @@ def applyWiener(g_opt):
     S = S.iloc[300:]
     Y = Y.iloc[300:]
 
-    Noise = Y.apply(calculateNoises, axis=0)
+    Noise = Y.apply(lambda y: calculateNoise(y, 35), axis=0)
 
     X = Y.add(Noise, fill_value=0)
 
@@ -150,3 +142,4 @@ def applyWiener(g_opt):
 
     print("done")
 
+    return x

@@ -8,6 +8,4 @@ def analyze(x):
 
     xAvgPowDB = 10 * np.log10(xAvgPow)
 
-    _ = xAvgPowDB
-
     print("Done")
