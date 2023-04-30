@@ -72,30 +72,49 @@ def calculateWienerIterative(x, p):
 
     return g_opt.x
 
+def applyFilter(s):
+    b = [0.0952, 0]
+    a = [1, -0.9048]
+
+    y = signal.lfilter(b, a, s)
+
+    return y
+
+def calculateNoises(y):
+    snr = 35
+    noise = calculateNoise(y, snr)
+    return noise
+
+def calculateSPrime(x, g_opt):
+    sPrime = np.convolve(x, g_opt)
+    return sPrime
+
 def applyWiener(g_opt):
     nProfiles = 20
 
     # df = generateBGs(1, 67.0) # Time in hours
     # df.to_pickle("Test67hr.pkl") 
-    df = pd.read_pickle("data/testPickle")
 
     delay = 10
     delaySpread = 2
 
-    for i, bg in enumerate(df):
-        s = df[bg].to_numpy()
+    S = pd.read_pickle("data/testPickle")
 
-        y = signal.lfilter(b, a, s)
+    Y = S.apply(applyFilter, axis=0)
 
-        # Remove transitory effect introduced by filtering
-        s = s[300:]
-        y = y[300:]
+    S = S.iloc[300:]
+    Y = Y.iloc[300:]
 
-        noise = calculateNoise(y, 35)
+    Noise = Y.apply(calculateNoises, axis=0)
 
-        x = y + noise
+    X = Y.add(Noise, fill_value=0)
 
-        sPrime = np.convolve(x, g_opt)
+    SPrime = X.apply(lambda x: calculateSPrime(x, g_opt), axis=0)
+
+    for i, name in enumerate(S):
+        s = S[name].values
+        x = X[name].values
+        sPrime = SPrime[name].values
 
         fig, axes = plt.subplots(2, 1, sharex=True, sharey=True)
 
@@ -108,7 +127,6 @@ def applyWiener(g_opt):
         axes[1].legend()
 
         plt.show()
-
 
         freqs = fftpack.fftfreq(s.size, Ts)
         idx = np.argsort(freqs)
@@ -130,5 +148,5 @@ def applyWiener(g_opt):
 
         print("done")
 
-
+    print("done")
 
