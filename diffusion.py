@@ -1,7 +1,6 @@
 from scipy import signal, fft, fftpack
 from noise import calculateNoise, calculateSNR
-from wiener import calculateWienerDirect, calculateWienerIterative, applyWiener, applyFilter
-from plotting import plotOptimalWiener
+from wiener import calculateWienerDirect, calculateWienerIterative, applyFilter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,14 +21,14 @@ def applyDiffusion(S, nDatasets):
 
     return S, Y
 
-def applyNoise(Y):
-    Noise = Y.apply(lambda y: calculateNoise(y, 15), axis=0)
+def applyNoise(Y, snr):
+    Noise = Y.apply(lambda y: calculateNoise(y, snr), axis=0)
     X = Y.add(Noise, fill_value=0)
     SNRs = X.apply(calculateSNR, axis=0)
 
     return X
 
-def applyWiener2(S, X, directMethod=True):
+def calculateWiener(S, X, directMethod=True):
     g_opt = None
 
     if directMethod:
@@ -37,9 +36,5 @@ def applyWiener2(S, X, directMethod=True):
     else:
         g_opt = X.apply(lambda x: calculateWienerIterative(x, filterOrder))
 
-    plotOptimalWiener(g_opt)
-
-    x = applyWiener(g_opt["BG1"].values)
-
-    return x
+    return g_opt
 

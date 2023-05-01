@@ -17,6 +17,11 @@ def applyFilter(s):
 
     return y
 
+def applyConvolution(X, g_opt):
+    SPrime = X.apply(lambda x: np.convolve(x, g_opt), axis=0)
+
+    return SPrime
+
 def calculateWienerDirect(x, S, p):
     s = S[x.name]
 
@@ -77,31 +82,25 @@ def calculateWienerIterative(x, p):
 
     return g_opt.x
 
-def calculateSPrime(x, g_opt):
-    sPrime = np.convolve(x, g_opt)
-    return sPrime
+def plotMagnitudes(S, X, SPrime):
 
-def applyWiener(g_opt):
-    nProfiles = 20
+    for i, name in enumerate(S):
+        s = S[name].values
+        x = X[name].values
+        sPrime = SPrime[name].values
 
-    # df = generateBGs(1, 67.0) # Time in hours
-    # df.to_pickle("Test67hr.pkl") 
+        freqs = fftpack.fftfreq(s.size, Ts)
+        idx = np.argsort(freqs)
 
-    delay = 10
-    delaySpread = 2
+        plt.semilogy(freqs[idx][s.size//2:], np.abs(fft.fft(s))[idx][s.size//2:], label="s")
+        plt.semilogy(freqs[idx][x.size//2:], np.abs(fft.fft(x))[idx][x.size//2:], label="x")
+        plt.semilogy(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="sp")
 
-    S = pd.read_pickle("data/testPickle")
+        plt.legend()
 
-    Y = S.apply(applyFilter, axis=0)
+        plt.show()
 
-    S = S.iloc[300:]
-    Y = Y.iloc[300:]
-
-    Noise = Y.apply(lambda y: calculateNoise(y, 35), axis=0)
-
-    X = Y.add(Noise, fill_value=0)
-
-    SPrime = X.apply(lambda x: calculateSPrime(x, g_opt), axis=0)
+def plotSignals(S, X, SPrime):
 
     for i, name in enumerate(S):
         s = S[name].values
@@ -119,27 +118,3 @@ def applyWiener(g_opt):
         axes[1].legend()
 
         plt.show()
-
-        freqs = fftpack.fftfreq(s.size, Ts)
-        idx = np.argsort(freqs)
-
-        # gMag = np.abs(fft.fft(g_opt))
-
-        # plt.semilogy(gMag)
-        # plt.show()
-        
-        plt.semilogy(freqs[idx][s.size//2:], np.abs(fft.fft(s))[idx][s.size//2:], label="s")
-        plt.semilogy(freqs[idx][x.size//2:], np.abs(fft.fft(x))[idx][x.size//2:], label="x")
-        plt.semilogy(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="sp")
-
-        # plt.plot(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="sp")
-
-        plt.legend()
-
-        plt.show()
-
-        print("done")
-
-    print("done")
-
-    return x
