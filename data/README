@@ -1,0 +1,9 @@
+## Data
+
+The data in this project was created using the Simglucose project. The following files are described below:
+
+- pickle: contains one 47 hour glucose signal used to create the Wiener filter
+- testPickle: contains one 67 hour glucose signal used to test the Wiener filter reduces noise and corrects time lag
+
+## Citations
+1. Jinyu Xie. Simglucose v0.2.1 (2018) [Online]. Available: https://github.com/jxx123/simglucose. Accessed on: August-15-2022.
