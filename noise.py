@@ -30,8 +30,6 @@ def calculateNoise(y, targetSNR):
     return noise
 
 def calculateSNR(x):
-    # TODO: Break signal up into sections 
-
     xMag = np.abs(fft.fft(x.values))
     xPSD = xMag ** 2
 
@@ -46,7 +44,9 @@ def calculateSNR(x):
 
 def applyNoise(Y, snr):
     Noise = Y.apply(lambda y: calculateNoise(y, snr), axis=0)
+
     X = Y.add(Noise, fill_value=0)
+
     SNRs = X.apply(calculateSNR, axis=0)
 
     return X

@@ -124,12 +124,12 @@ def calculateGroupDelays(coeffs):
     _, gd = signal.group_delay((coeffs.values[:], np.array([1])), w=w)
     return gd
 
-def plotOptimalWiener(coeffs):
-    gMag = coeffs.apply(calculateMagnitudes, axis=0)
+def plotOptimalWiener(g_opt):
+    gMag = g_opt.apply(calculateMagnitudes, axis=0)
 
-    gd = coeffs.apply(calculateGroupDelays, axis=0)
+    gd = g_opt.apply(calculateGroupDelays, axis=0)
 
-    gSize = coeffs.shape[0]
+    gSize = g_opt.shape[0]
     freqs = fftpack.fftfreq(gSize, Ts)
     idx = np.argsort(freqs)
 
@@ -153,7 +153,7 @@ def plotMagnitudes(S, X, SPrime):
 
         plt.semilogy(freqs[idx][s.size//2:], np.abs(fft.fft(s))[idx][s.size//2:], label="s")
         plt.semilogy(freqs[idx][x.size//2:], np.abs(fft.fft(x))[idx][x.size//2:], label="x")
-        plt.semilogy(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="sp")
+        plt.semilogy(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="s'")
 
         plt.legend()
 
@@ -169,8 +169,7 @@ def plotSignals(S, X, SPrime):
         fig, axes = plt.subplots(2, 1, sharex=True, sharey=True)
 
         axes[0].plot(s, label="s")
-        # axes[0].plot(x, label="x")
-        axes[0].plot(sPrime, label="sp")
+        axes[0].plot(sPrime, label="s'")
 
         axes[1].plot(s, label="s")
         axes[1].plot(x, label="x")

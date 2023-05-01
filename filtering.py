@@ -3,18 +3,13 @@ import numpy as np
 
 targetSNR = 40 # dB
 
-def applyFilter(s):
-    b = [0.0952, 0]
-    a = [1, -0.9048]
-
-    y = signal.lfilter(b, a, s)
-
-    return y
-
 def applyDiffusion(S, nDatasets):
     S = S.iloc[:, 0:nDatasets]
 
-    Y = S.apply(applyFilter, axis=0)
+    b = [0.0952, 0]
+    a = [1, -0.9048]
+
+    Y = S.apply(lambda s: signal.lfilter(b, a, s), axis=0)
 
     # Remove transitory effect introduced by filtering
     cropIndex = 300
