@@ -1,8 +1,9 @@
 from generation import generateBGs
-from diffusion import applyDiffusion, applyNoise, calculateWiener
+from filtering import applyDiffusion, applyConvolution
 from analysis import analyze
-from plotting import plotOptimalWiener
-from wiener import plotSignals, plotMagnitudes, applyConvolution
+from plotting import plotOptimalWiener, plotSignals, plotMagnitudes
+from wiener import calculateWiener
+from noise import applyNoise
 
 def main():
     # bg = generateBGs(2, 40.0) # Time in hours

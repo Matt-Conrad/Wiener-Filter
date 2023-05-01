@@ -43,3 +43,10 @@ def calculateSNR(x):
     SNRestimate = 10 * np.log10(signalSum / noiseSum)
 
     return SNRestimate
+
+def applyNoise(Y, snr):
+    Noise = Y.apply(lambda y: calculateNoise(y, snr), axis=0)
+    X = Y.add(Noise, fill_value=0)
+    SNRs = X.apply(calculateSNR, axis=0)
+
+    return X

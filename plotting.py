@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 from scipy import signal, fft, fftpack
 import numpy as np
 
+Ts = 1 # minute
+Ts = Ts / 60 # 60 minutes = 1 hour
+fs = 1 / Ts # cycle per hour
+
 def plotSignalCreation(s, y, x):
     plt.plot(s, label='s(n)')
     # plt.plot(y, label='y(n)')
@@ -18,10 +22,6 @@ def plotFilterDetails(b, a):
     fig = plt.figure()
 
     w, h = signal.freqz(b, a) # w is in rad/sample
-
-    Ts = 1 # minute
-    Ts = Ts / 60 # 60 minutes = 1 hour
-    fs = 1 / Ts # cycle per hour
 
     f = fs * w / (2 * np.pi) 
 
@@ -77,9 +77,6 @@ def plotPSD(y, noise, x):
     yPSD = yMag ** 2
     xPSD = xMag ** 2
     noisePSD = noiseMag ** 2
-
-    Ts = 1 # minute
-    Ts = Ts / 60 # 60 minutes = 1 hour
     
     N = y.size
 
@@ -128,10 +125,6 @@ def calculateGroupDelays(coeffs):
     return gd
 
 def plotOptimalWiener(coeffs):
-    Ts = 1 # minute
-    Ts = Ts / 60 # 60 minutes = 1 hour
-    w = 512
-
     gMag = coeffs.apply(calculateMagnitudes, axis=0)
 
     gd = coeffs.apply(calculateGroupDelays, axis=0)
@@ -146,3 +139,41 @@ def plotOptimalWiener(coeffs):
     axes[1].plot(gd["BG1"].values, ".")
     
     plt.show()
+
+
+def plotMagnitudes(S, X, SPrime):
+
+    for i, name in enumerate(S):
+        s = S[name].values
+        x = X[name].values
+        sPrime = SPrime[name].values
+
+        freqs = fftpack.fftfreq(s.size, Ts)
+        idx = np.argsort(freqs)
+
+        plt.semilogy(freqs[idx][s.size//2:], np.abs(fft.fft(s))[idx][s.size//2:], label="s")
+        plt.semilogy(freqs[idx][x.size//2:], np.abs(fft.fft(x))[idx][x.size//2:], label="x")
+        plt.semilogy(freqs[idx][sPrime.size//2:], np.abs(fft.fft(sPrime))[idx][sPrime.size//2:], label="sp")
+
+        plt.legend()
+
+        plt.show()
+
+def plotSignals(S, X, SPrime):
+
+    for i, name in enumerate(S):
+        s = S[name].values
+        x = X[name].values
+        sPrime = SPrime[name].values
+
+        fig, axes = plt.subplots(2, 1, sharex=True, sharey=True)
+
+        axes[0].plot(s, label="s")
+        # axes[0].plot(x, label="x")
+        axes[0].plot(sPrime, label="sp")
+
+        axes[1].plot(s, label="s")
+        axes[1].plot(x, label="x")
+        axes[1].legend()
+
+        plt.show()
